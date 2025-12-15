@@ -26,6 +26,8 @@ async def create_upload_file(file: UploadFile = File(...)):
     try:
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
+         
+            
         knowledge_base_service.process_pdf(file_path=file_path, collection_name=file.filename)
         return {"filename": file.filename}
     except Exception as e:

@@ -4,7 +4,7 @@ from ..core.config import settings
 import google.generativeai as genai
 from typing import Optional
 
-def get_gemini_response(prompt: str, user_query: str, context: Optional[str] = None, web_context: Optional[str] = None, model_name: str = "gemini-1.5-flash-latest") -> str:
+def get_gemini_response(prompt: str, user_query: str, context: Optional[str] = None, web_context: Optional[str] = None, model_name: str = "gemini-2.5-flash") -> str:
     if not settings.GOOGLE_API_KEY:
         return "Error: GOOGLE_API_KEY is not set in the environment."
     

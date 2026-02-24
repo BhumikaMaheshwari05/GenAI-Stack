@@ -1,5 +1,7 @@
 # backend/app/main.py
 from fastapi import FastAPI, Depends, File, UploadFile, HTTPException
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List
@@ -9,12 +11,22 @@ import os
 from .core.db import engine, get_db
 from .models import stack as stack_model
 from . import schemas
-from .services import gemini_service, knowledge_base_service, web_search_service
+from .services import gemini_service, knowledge_base_service, web_search_service, pdf_service, git_service
 
 stack_model.Base.metadata.create_all(bind=engine)
-app = FastAPI(title="GenAI Stack Builder API")
-origins = ["http://localhost:3000"]
-app.add_middleware(CORSMiddleware, allow_origins=origins, allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
+app = FastAPI(title="Intelliflow API")
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
+
+# Serve static files (widget.js)
+STATIC_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "static")
+if os.path.exists(STATIC_DIR):
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+@app.get("/widget.js")
+def serve_widget():
+    """Convenience route so users can embed with /widget.js instead of /static/widget.js"""
+    widget_path = os.path.join(STATIC_DIR, "widget.js")
+    return FileResponse(widget_path, media_type="application/javascript")
 
 UPLOAD_DIRECTORY = "./uploaded_files"
 if not os.path.exists(UPLOAD_DIRECTORY):
@@ -86,7 +98,7 @@ def run_stack(stack_id: int, request: schemas.QueryRequest, db: Session = Depend
         raise HTTPException(status_code=400, detail="Workflow must have a 'User Query' node")
 
     # Initialize the data object that will be passed through the workflow
-    current_data = {"query": request.query, "kb_context": None, "web_context": None}
+    current_data = {"query": request.query, "kb_context": None, "web_context": None, "git_context": None}
     current_node_id = start_node['id']
     
     while current_node_id:
@@ -107,14 +119,36 @@ def run_stack(stack_id: int, request: schemas.QueryRequest, db: Session = Depend
             current_data["web_context"] = web_search_service.perform_search(
                 query=current_data["query"]
             )
+
+        elif node_type == 'PDF Generator':
+            filename = node_config.get('filename', 'report.pdf')
+            content = current_data.get("result", "No content generated.")
+            pdf_service.generate_pdf(content, filename)
+
+        elif node_type == 'Git Repo':
+            repo_url = node_config.get('repoUrl')
+            if repo_url:
+                current_data["git_context"] = git_service.get_repo_code(repo_url)
         
-        elif node_type == 'LLM (OpenAI)':
+        elif node_type == 'Gemini AI':
             prompt = node_config.get("prompt", "You are a helpful assistant.")
+            model_name = node_config.get("model")
+            
+            # Combine all available contexts
+            full_context = []
+            if current_data.get("kb_context"): 
+                full_context.append(f"Document Context: {current_data['kb_context']}")
+            if current_data.get("git_context"):
+                full_context.append(f"Repository Code:\n{current_data['git_context']}")
+            
+            merged_context = "\n".join(full_context) if full_context else None
+
             current_data["result"] = gemini_service.get_gemini_response(
                 prompt=prompt,
                 user_query=current_data["query"],
-                context=current_data.get("kb_context"),
-                web_context=current_data.get("web_context")
+                context=merged_context,
+                web_context=current_data.get("web_context"),
+                model_name=model_name or "gemini-2.5-flash"
             )
 
         next_edge = next((e for e in edges if e['source'] == current_node_id), None)

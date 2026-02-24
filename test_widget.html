@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMIÈRE | Modern Apparel</title>
+    <style>
+        :root {
+            --accent: #e63946;
+            --bg: #0f0f0f;
+            --card-bg: #1a1a1a;
+            --text-main: #ffffff;
+            --text-dim: #a0a0a0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            margin: 0;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            border-bottom: 1px solid #222;
+            position: sticky;
+            top: 0;
+            background: rgba(15, 15, 15, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        .logo { font-size: 1.5rem; font-weight: 800; letter-spacing: 2px; }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 100px 5%;
+            background: linear-gradient(to bottom, #1a1a1a, #0f0f0f);
+        }
+
+        .hero h1 { font-size: 4rem; margin: 0; font-weight: 900; }
+        .hero p { color: var(--text-dim); margin-bottom: 30px; }
+
+        /* Product Grid */
+        .container { padding: 50px 5%; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .product-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            border: 1px solid #222;
+        }
+
+        .product-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+
+        .product-image {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+            background: #252525;
+        }
+
+        .product-info { padding: 20px; }
+        .product-info h3 { margin: 0; font-size: 1.1rem; }
+        .price { color: var(--accent); font-weight: bold; font-size: 1.2rem; }
+        
+        .buy-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            background: white;
+            color: black;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .buy-btn:hover { background: var(--accent); color: white; }
+
+        footer { text-align: center; padding: 50px; color: #444; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">LUMIÈRE</div>
+        <div class="menu">Shop | About | Contact</div>
+    </nav>
+
+    <header class="hero">
+        <h1>ESSENTIALS '26</h1>
+        <p>Premium basics for the modern minimalist.</p>
+    </header>
+
+    <main class="container">
+        <div class="grid">
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80" alt="White Tee" class="product-image">
+                <div class="product-info">
+                    <h3>Heavyweight Organic Tee</h3>
+                    <p class="price">$45.00</p>
+                    <button class="buy-btn">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=800&q=80" alt="Jacket" class="product-image">
+                <div class="product-info">
+                    <h3>Technical Bomber Jacket</h3>
+                    <p class="price">$120.00</p>
+                    <button class="buy-btn">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=800&q=80" alt="Leather Jacket" class="product-image">
+                <div class="product-info">
+                    <h3>Vintage Leather Shell</h3>
+                    <p class="price">$290.00</p>
+                    <button class="buy-btn">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=800&q=80" alt="Black Shirt" class="product-image">
+                <div class="product-info">
+                    <h3>Urban Oversized Hoodie</h3>
+                    <p class="price">$85.00</p>
+                    <button class="buy-btn">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2026 LUMIÈRE STUDIO. ALL RIGHTS RESERVED.
+    </footer>
+
+    <script src="http://127.0.0.1:8000/widget.js" data-stack-id="6" data-title="Shopping Assistant" data-theme="dark" data-position="bottom-right"></script>
+
+</body>
+</html>
